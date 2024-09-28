@@ -28,108 +28,108 @@ The bootloader code ends with the installation of the last two bytes, the signat
 
 **To implement the task solution to the OS kernel, the following functions have been developed:**
 
-Получение аргумента из команды.	
++ Getting an argument from a command.
 ```
 char* get_argument(char* command)
 ```
 
-Обработка случаев некорректного ввода: отсутствия аргумента, присутствие более чем одного аргумента. В случае ошибки возвращается пустая строка, иначе – аргумент (строка).
+Handling cases of incorrect input: the absence of an argument, the presence of more than one argument. In case of an error, an empty string is returned, otherwise an argument is returned.
 
-Поиск перевода слова в разделе.	
++ Search for the translation of a word in the section.
 ```
 char* bin_search(char* word, DictSection* section)
 ```
 
-Бинарный поиск перевода слова по разделу. В случае если слово не найдено – возвращается пустая строка, иначе – перевод слова.
+Binary search for the translation of a word by section. If the word is not found, an empty string is returned, otherwise the word is translated.
 
-Запись/чтение байта из портов.	
++ Write/read bytes from ports.
 ```
 static inline void outb(unsigned short port, unsigned char data)
 static inline void outw(unsigned int port, unsigned int data)
 static inline unsigned char inb(unsigned short port)
 ```
 
-При помощи ассемблерных вставок выполняются действия записи в порт байта/слова, чтение из порта байта.
+Using assembler inserts, the actions of writing to the byte/word port and reading from the byte port are performed.
 
-+ Вывод символа/строки на экран.	
++ Displaying a character/string on the screen.	
 ```
 static inline void out_char(const char sym, unsigned int strnum)
 static inline void out_str(const char* ptr, unsigned int strnum)
 ```
 
-Поддерживают прокрутку экрана (video_up()), при выводе строки корректно обрабатываются специфические символы алфавита испанского языка.
+They support scrolling of the screen (video_up()), when displaying a line, specific characters of the Spanish alphabet are correctly processed.
 
-+ Вывод информации об ОС.	
++ Output information about the OS.	
 ```
 static inline void info()
 ```
 
-+ Вывод информации о загруженном словаре.	
++ Displaying information about the loaded dictionary.	
 ```
 void dictinfo()
 ```
 
-Используется информация о количестве слов, хранящаяся в структуре словаря.
+The information about the number of words stored in the dictionary structure is used.
 
-+ Перевод слова.	
++ The translation of the word.
 ```
 void translate()
 ```
 
-Из команды извлекается аргумент, проверяется его корректность (в случае некорректного аргумента пользователь увидит сообщение об ошибке). При помощи бинарного поиска выводится слово-перевод или сообщение об отсутствии перевода.
+An argument is extracted from the command, its correctness is checked (in case of an incorrect argument, the user will see an error message). Using binary search, a translation word or a message about the absence of a translation is displayed.
 
-+ Вывод информации о статистике раздела словаря.	
++ Output of information about the statistics of the dictionary section.	
 ```
 void wordstat()
 ```
 
-Из команды извлекается аргумент, проверяется его корректность (в случае некорректного аргумента пользователь увидит сообщение об ошибке). Используется информация о количестве слов и статусе раздела, хранящаяся в структуре раздела словаря.
+An argument is extracted from the command, its correctness is checked (in case of an incorrect argument, the user will see an error message). The information about the number of words and the status of the section stored in the structure of the dictionary section is used.
 
-+ Выключение компьютера.	
++ Turning off the computer.
 ```
 static inline void shutdown()
 ```
 
-Реализуется с помощью записи последовательности байтов в порты ввода-вывода.
+It is implemented by writing a sequence of bytes to the I/O ports.
 
-+ Вывод случайного слова из загруженных/на конкретную букву.	
++ Output a random word from the uploaded/to a specific letter.
 ```
 void anyword()
 ```
 
-Из команды извлекается аргумент, проверяется его корректность (в случае некорректного аргумента пользователь увидит сообщение об ошибке).
-Если раздел на указанную букву не загружен, пользователь увидит сообщение об ошибке. 
-Если аргумент корректен обрабатывается каждый из случаев. При указании конкретной буквы, генерируется псевдослучайное число, для выбора слова из раздела используется его остаток от деления на число слов в разделе. Без указания буквы подобным образом генерируется также номер раздела.
+An argument is extracted from the command, its correctness is checked (in case of an incorrect argument, the user will see an error message).
+If the section for the specified letter is not loaded, the user will see an error message. 
+If the argument is correct, each of the cases is processed. When specifying a specific letter, a pseudo-random number is generated, and the remainder of the division by the number of words in the section is used to select a word from the section. Without specifying the letter, the section number is also generated in this way.
 
-+ Обработка ввода некорректной/неизвестной команды.	
++ Processing the input of an incorrect/unknown command.
 ```
 static inline void wrong_command()
 ```
 
-+ Обработка команды.	
++ Processing the command.	
 ```
 void enter()
 ```
 
-Выполнение функции в соответствие с вводом. Очистка строки-ввода после выполнения команды для записи новой.
+Performing the function according to the input. Clearing the input line after executing the command to write a new one.
 
-+ Обработка кода, поступившего в клавиатуры.	
++ Processing the code received by the keyboard.
 ```
 void read_code(unsigned char code)
 ```
 
-Изменение строки-ввода, если количество уже введённых символов не превышает 40. Обработка клавиш BackSpace, Enter, Shitf.
+Changing the line is an input if the number of characters already entered does not exceed 40. Press BackSpace, Enter, Shift.
 
-+ Точка входа.
++ The entry point.
 ```
 extern "C" int kmain()
 ```	
 
-Загрузка словаря, подсчёт его характеристик, приветствие пользователя, инициализация обработчиков прерываний, ожидание ввода от пользователя.
+Loading a dictionary, counting its characteristics, greeting the user, initializing interrupt handlers, waiting for input from the user.
 
-+ Функции вывода, приведённые в методических материалах, были усовершенствованы: реализована прокрутка экрана при его полном заполнении, также поддерживается вывод специфических символов алфавита испанского языка. Для выполнения операций со строками и числами были реализованы служебные функции – аналоги функций для работы со строками и числами в C.
++ The output functions given in the methodological materials have been improved: scrolling of the screen has been implemented when it is fully filled, and the output of specific characters of the Spanish alphabet is also supported. To perform operations with strings and numbers, utility functions were implemented – analogs of functions for working with strings and numbers in C.
 
-+ Словарь представляет собой структуру данных, состоящую из разделов (по одному на каждую букву), в которых хранятся пары слов, количество пар слов, флаги включения раздела. Также в словаре хранится общее количество слов и количество доступных слов, которые вычисляются в начале работы ядра ОС. 
-Поиск слов в словаре происходит посредством бинарного поиска по необходимому разделу словаря: программа обращается по первой букве слова в необходимый раздел, после чего производит бинарный поиск по нему.
++ The dictionary is a data structure consisting of sections (one for each letter), which store pairs of words, the number of pairs of words, and flags for including the section. The dictionary also stores the total number of words and the number of available words, which are calculated at the beginning of the OS kernel. 
+The search for words in the dictionary takes place by means of a binary search for the necessary section of the dictionary: the program accesses the first letter of the word to the necessary section, after which it performs a binary search on it.
 
-+ Для реализации генерации псевдослучайных чисел был выбран алгоритм из ОС Pintos: алгоритм генерации псевдослучайных чисел RC4.
++ To implement the generation of pseudorandom numbers, an algorithm from the Pintos OS was selected: the RC4 pseudorandom number generation algorithm.
